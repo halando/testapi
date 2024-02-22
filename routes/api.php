@@ -18,31 +18,26 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(["middleware"=>"auth:sanctum"],function(){
+    Route::get("/getDrinks",[DrinkController::class,"getDrinks"]);
+    Route::post("/getDrink",[DrinkController::class,"getDrinkByNameReq"]);
+    Route::post("/addDrink",[DrinkController::class,"addDrink"]);
+    Route::post("/addType",[TypeController::class,"addType"]);
+    Route::put("/modType",[TypeController::class,"modifyType"]);
+    Route::delete("/delType",[TypeController::class,"destroyType"]);
+    Route::get("/getPackages",[PackageController::class,"getPackages"]);
+    Route::post("/packageExists",[PackageController::class,"tehereExistsPackageByName"]);
+    Route::post("/addPackage",[PackageController::class,"addPackage"]);
+    Route::put("/modPackage",[PackageController::class,"modifyPackage"]);
+    Route::delete("/delPackage",[PackageController::class,"destroyPackage"]);
+    Route::post("/logout",[AuthController::class,"logout"]);
+
 });
 
 
-Route::get("/getDrinks",[DrinkController::class,"getDrinks"]);
-Route::post("/getDrink",[DrinkController::class,"getDrinkByNameReq"]);
-Route::post("/addDrink",[DrinkController::class,"addDrink"]);
 Route::put("/modDrink",[DrinkController::class,"modifyDrink"]);
 Route::delete("/delDrink",[DrinkController::class,"destroyDrink"]);
-
 Route::get("/getTypes",[TypeController::class,"getTypes"]);
 Route::post("/typeExists",[TypeController::class,"tehereExistsTypeByName"]);
-Route::post("/addType",[TypeController::class,"addType"]);
-Route::put("/modType",[TypeController::class,"modifyType"]);
-Route::delete("/delType",[TypeController::class,"destroyType"]);
-
-Route::get("/getPackages",[PackageController::class,"getPackages"]);
-Route::post("/packageExists",[PackageController::class,"tehereExistsPackageByName"]);
-Route::post("/addPackage",[PackageController::class,"addPackage"]);
-Route::put("/modPackage",[PackageController::class,"modifyPackage"]);
-Route::delete("/delPackage",[PackageController::class,"destroyPackage"]);
-
-
-
-Route::post("/register",[AuthController::class,"register"]);
-Route::post("/login",[AuthController::class,"login"]);
-Route::post("/logout",[AuthController::class,"logout"]);
+Route::post("/register",[AuthController::class,"register"])->middleware("throttle:100,43200");
+Route::post("/login",[AuthController::class,"login"])->middleware("throttle:100,43200");
