@@ -6,6 +6,8 @@ namespace App\Http\Requests;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
+
 
 class UserRegisterChecker extends FormRequest
 {
@@ -25,10 +27,16 @@ class UserRegisterChecker extends FormRequest
     public function rules(): array
     {
         return [
-            "name"=>"required|max:50",
-            "email"=>"required|email|unique:users",
-            "password"=>"required|min:6",
-            "confirm_password"=>"required|same:password",
+            "name"=>["required","unique:users","max:10"],
+            "email"=>["required","regex:/(.+)@(.+)\.(.+)/i","unique:users"],
+            "password"=>["required",Password::min(6)
+                                        ->letters()
+                                        ->numbers()
+                                        ->mixedCase()
+                                        ->symbols()
+                                        ->uncompromised(),
+                                        "confirmed"],
+          //  "password_confirmation"=>"required",
 
         ];
     }
@@ -37,14 +45,19 @@ class UserRegisterChecker extends FormRequest
     {
         return [
             "name.required"=>"Name required",
+            "name.unique"=>"Létező felhasználó",
             "name.max"=>"Name too long",
             "email.required"=>"Email required",
-            "email.email"=>"Email wrong format",
+            "email.regex"=>"Email wrong format",
             "email.unique"=>"Az email már használatban van",
             "password.required"=>"Password required",
             "password.min"=>"Password too short",
-            "confirm_password.required"=>"Confirm Password required",
-            "confirm_password.same"=>"Passwords don't match",
+            "password.letters"=>"legalább egy betű",
+            "password.numbers"=>"legalább egy szám",
+            "password.mixed"=>"Kis és nagybetű",
+            "password.symbols"=>"Legalább egy különleges karakter",
+            "password.confirmation.required"=>"Confirm Password required",
+            "password_confirmed"=>"Passwords don't match",
 
         ];
     }
