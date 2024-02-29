@@ -9,6 +9,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Api\ResponseController;
 use App\Http\Resources\Drink as DrinkResource;
 
+use Illuminate\Support\Facades\Gate;
+
 
 class DrinkController extends ResponseController
 {
@@ -33,7 +35,9 @@ class DrinkController extends ResponseController
         return $this->sendResponse(DrinkResource::make($drink), "Betöltve");
     }
     public function addDrink(DrinkChecker $request){
-        $request->validated();
+
+        if(Gate::allows("is_admin", auth()->user() )){
+            $request->validated();
         $input = $request->all();
         
         $drink = new Drink;
@@ -45,7 +49,12 @@ class DrinkController extends ResponseController
             return $this->sendError("hiba a bejövő paraméterekben");
         }
         $drink->save();
-        return $this->sendResponse(DrinkResource::make($drink), "Mentve");
+        return $this->sendResponse(DrinkResource::make($drink), "Kiírva");
+            
+        }else{
+           return $this->getDrinks();
+        }
+        
     }
     
     
